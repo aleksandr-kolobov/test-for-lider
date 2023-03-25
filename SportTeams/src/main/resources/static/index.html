@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>WorldSights</title>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <script src="/js/jquery-3.4.0.min.js"></script>
+    <script src="/js/main.js"></script>
+</head>
+<body>
+    <h1>Приветствую, пользователь!</h1>
+    <section class="oll">
+        <div class="left">
+            <a href="/players">Получить всех игроков из базы данных</a>
+            <p>после перехода вы получите вывод всех игроков из базы в формате JSON.</p>
+            <p>можно сделать выборку по конкретной команде и по типу игрока</p>
+            <p>(Нападающий/Полузащитник/Защитник/Вратарь) нужно указать</p>
+            <p>варианты type=forward, midfielder, defender, goalkeeper</p>
+            <p>для этого нужно добавить параметры запроса team= и type= через &</p>
+            <p>например ?type=forward&team=spartak получим нападающих игроков спартака.</p>
+            <p>регистр ввода не имеет значения.</p>
+            <p>для получения отдельной записи по номеру в базе данных, можно добавить номер через слеш</p>
+            <p>например players/4 вернет запись с ID=4</p>
+
+            <a href="/teams">Получить все команды</a>
+            <p>переход на страницу со списком всех команд,</p>
+            <p>также можно добавить свойство sport=football, basketball, volleyball, hockey, baseball</p>
+            <p>для получения записей команд из базы данных по виду спорта, можно добавить имя или номер через слеш</p>
+            <p>например teams/3 вернет команду с ID=3, или teams/csk вернет запись команды ЦСК в формате JSON</p>
+            <p>есть возможность получить команды за период по дате основания</p>
+        </div>
+        <div class="middle">
+            <h2>КОМАНДЫ</h2>
+            <button class="add-team-button">добавить команду</button>
+            <button class="correct-team-button">редактировать команду</button>
+            <button class="delete-team-button">удалить команду </button>
+        </div>
+        <div class="right">
+            <h3>ИГРОКИ</h3>
+            <button class="add-player-button">добавить игрока</button>
+            <button class="correct-player-button">редактировать игрока</button>
+            <button class="delete-player-button">удалить игрока</button>
+        </div>
+    </section>
+
+    <div class="add-team-form">
+        <form>
+            <h2>ДОБАВЛЕНИЕ КОМАНДЫ</h2>
+            <label>Название команды:</label>
+            <input type="text" name="name" value="">
+            <label>Вид спорта:</label>
+            <input type="text" name="sport" value="">
+            <label>Дата основания(гггг-мм-дд):</label>
+            <input type="text" name="date" value="">
+            <hr>
+            <button class="save-add-team-button">Сохранить</button>
+        </form>
+    </div>
+    <div class="correct-team-form">
+        <form>
+            <h2>РЕДАКТИРОВАНИЕ КОМАНДЫ</h2>
+            <label>ID команды:</label>
+            <input type="text" name="teamId" value="">
+            <label>Название команды:</label>
+            <input type="text" name="name" value="">
+            <label>Вид спорта:</label>
+            <input type="text" name="sport" value="">
+            <hr>
+            <button class="save-correct-team-button">Сохранить</button>
+        </form>
+    </div>
+    <div class="delete-team-form">
+        <form>
+            <h2>УДАЛЕНИЕ КОМАНДЫ</h2>
+            <label>ID команды:</label>
+            <input type="text" name="teamId" value="">
+            <hr>
+            <button class="save-delete-team-button">Сохранить</button>
+        </form>
+    </div>
+
+    <div class="add-player-form">
+        <form>
+            <h2>ДОБАВЛЕНИЕ ИГРОКА</h2>
+            <label>Фамилия :</label>
+            <input type="text" name="surname" value="">
+            <label>Имя :</label>
+            <input type="text" name="name" value="">
+            <label>Отчество :</label>
+            <input type="text" name="patronymic" value="">
+            <label>Дата рождения(гггг-мм-дд):</label>
+            <input type="text" name="date" value="">
+            <label>Роль(позиция):</label>
+            <input type="text" name="type" value="">
+            <label>Команда:</label>
+            <input type="text" name="team" value="">
+            <hr>
+            <button class="save-add-player-button">Сохранить</button>
+        </form>
+    </div>
+    <div class="correct-player-form">
+        <form>
+            <h2>РЕДАКТИРОВАНИЕ ИГРОКА</h2>
+            <label>ID объекта:</label>
+            <input type="text" name="playerId" value="">
+            <label>Роль(позиция):</label>
+            <input type="text" name="type" value="">
+            <label>Команда:</label>
+            <input type="text" name="team" value="">
+            <hr>
+            <button class="save-correct-player-button">Сохранить</button>
+        </form>
+    </div>
+    <div class="delete-player-form">
+        <form>
+            <h2>УДАЛЕНИЕ ИГРОКА</h2>
+            <label>ID объекта:</label>
+            <input type="text" name="playerId" value="">
+            <hr>
+            <button class="save-delete-player-button">Удалить</button>
+        </form>
+    </div>
+</body>
+</html>
