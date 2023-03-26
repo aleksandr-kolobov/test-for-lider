@@ -1,0 +1,55 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: postgres
+    changes:
+      - createTable:
+          tableName: teams
+          columns:
+            - column:
+                name: id
+                type: integer
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+                  nullable: false
+            - column:
+                name: name
+                type: varchar(50)
+                constraints:
+                  unique: true
+                  nullable: false
+- changeSet:
+    id: 2
+    author: postgres
+    changes:
+      - createTable:
+          tableName: players
+          columns:
+            - column:
+                name: id
+                type: integer
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+                  nullable: false
+            - column:
+                name: name
+                type: varchar(50)
+                constraints:
+                  unique: true
+                  nullable: false
+- changeSet:
+    id: 3
+    author: postgres
+    comment: "Create Noname Team"
+    changes:
+      - insert:
+          tableName: teams
+          columns:
+            - column:
+                name: id
+                value: 0
+            - column:
+                name: name
+                value: "Nonameteam"
