@@ -44,8 +44,26 @@ databaseChangeLog:
                   primaryKey: true
                   nullable: false
             - column:
+                name: surname
+                type: varchar(50)
+                constraints:
+                  nullable: false
+            - column:
                 name: name
                 type: varchar(50)
                 constraints:
-                  unique: true
                   nullable: false
+            - column:
+                name: patronymic
+                type: varchar(50)
+            - column:
+                name: bthdate
+                type: date
+                constraints:
+                  nullable: false
+            - column:
+                name: position
+                type: varchar(50)
+            - column:
+                name: team_id
+                type: integer

@@ -1,8 +1,6 @@
 package main.controller;
 
-import main.model.DtoTeam;
-import main.model.Sport;
-import main.model.Team;
+import main.model.*;
 import main.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class TeamController {
@@ -21,20 +21,44 @@ public class TeamController {
     private TeamRepository teamRepository;
 
     @GetMapping("/teams")
-    public List<Team> getTeamsList(@RequestParam(defaultValue = "ALL") String sport
-            , @RequestParam(defaultValue = "0000-01-01") String fromdate
-            , @RequestParam(defaultValue = "9999-12-31") String tilldate){
-        sport = sport.toUpperCase();
-        Sport sportF = Sport.valueOf(sport);
-        LocalDate fromDate = LocalDate.parse(fromdate);
-        LocalDate tillDate = LocalDate.parse(tilldate);
-        List<Team> list = new ArrayList<>();
-        teamRepository.findAll().stream().filter(t -> (t.getBthdate().isAfter(fromDate))
-                        && (t.getBthdate().isBefore(tillDate))
-                        && (sportF.equals(Sport.ALL) || sportF.equals(t.getSport())))
-                .forEach(list::add);
+    public ResponseEntity<List<Team>> getTeamsList(@RequestParam(defaultValue = "") String sport
+                         , @RequestParam(defaultValue = "") String fromdate
+                   , @RequestParam(defaultValue = "") String tilldate){
+        List<Team> list = new ArrayList<>(teamRepository.findAll());
+        if (!sport.isEmpty()) {
+            Sport sportF;
+            try {
+                sportF = Sport.valueOf(sport.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+            Stream<Team> stream = list.stream().filter(t -> t.getSport() == sportF);
+            list = stream.collect(Collectors.toList());
+        }
+        if (!fromdate.isEmpty()) {
+            System.out.println(fromdate);
+            LocalDate localDate;
+            try {
+                localDate = LocalDate.parse(fromdate);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+            Stream<Team> stream = list.stream().filter(t -> t.getBthdate().isAfter(localDate));
+            list = stream.collect(Collectors.toList());
+        }
+        if (!tilldate.isEmpty()) {
+            System.out.println(tilldate);
+            LocalDate localDate;
+            try {
+                localDate = LocalDate.parse(tilldate);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+            Stream<Team> stream = list.stream().filter(t -> t.getBthdate().isBefore(localDate));
+            list = stream.collect(Collectors.toList());
+        }
         list.sort(Comparator.comparing(Team::getId));
-        return list;
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/teams/{nameOrId}")
@@ -50,7 +74,7 @@ public class TeamController {
     }
 
     @PostMapping("/teams")
-    public ResponseEntity addTeam(DtoTeam dtoTeam) {
+    public ResponseEntity<Team> addTeam(DtoTeam dtoTeam) {
         Team team = new Team();
         String name = dtoTeam.getName();
         name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
@@ -64,28 +88,40 @@ public class TeamController {
     public ResponseEntity<Team> correctTeamByName(String name, String sport, String bthdate) {
         name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
         Optional<Team> optional = teamRepository.findByName(name);
-        if(optional.isPresent()) {
-            Team team = optional.get();
-            team.setSport(Sport.valueOf(sport.toUpperCase()));
-            team.setBthdate(LocalDate.parse(bthdate));
-            return new ResponseEntity(teamRepository.save(team), HttpStatus.OK);
+        if(!optional.isPresent()) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
+
+        Team team = optional.get();
+        if (!sport.isEmpty()) {
+            team.setSport(Sport.valueOf(sport.toUpperCase()));
+        }
+        if (!bthdate.isEmpty()) {
+            team.setBthdate(LocalDate.parse(bthdate));
+        }
+        return new ResponseEntity(teamRepository.save(team), HttpStatus.OK);
     }
 
     @PatchMapping("/teams/{id}")
     public ResponseEntity<Team> correctTeamById(@PathVariable int id,
                              String name, String sport, String bthdate) {
         Optional<Team> optional = teamRepository.findById(id);
-        if(optional.isPresent()) {
-            Team team = optional.get();
+        if(!optional.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Team team = optional.get();
+        if (!name.isEmpty()) {
             name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
             team.setName(name);
-            team.setSport(Sport.valueOf(sport.toUpperCase()));
-            team.setBthdate(LocalDate.parse(bthdate));
-            return new ResponseEntity(teamRepository.save(team), HttpStatus.OK);
         }
-        return ResponseEntity.notFound().build();
+        if (!sport.isEmpty()) {
+            team.setSport(Sport.valueOf(sport.toUpperCase()));
+        }
+        if (!bthdate.isEmpty()) {
+            team.setBthdate(LocalDate.parse(bthdate));
+        }
+        return new ResponseEntity(teamRepository.save(team), HttpStatus.OK);
     }
 
     @DeleteMapping("/teams/{id}")

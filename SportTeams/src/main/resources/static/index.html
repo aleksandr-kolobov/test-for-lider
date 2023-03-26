@@ -13,14 +13,14 @@
         <div class="left">
             <a href="/players">Получить всех игроков из базы данных</a>
             <p>после перехода вы получите вывод всех игроков из базы в формате JSON.</p>
-            <p>можно сделать выборку по конкретной команде и по типу игрока</p>
+            <p>можно сделать выборку по конкретной команде и по типу(роли) игрока</p>
             <p>(Нападающий/Полузащитник/Защитник/Вратарь) нужно указать</p>
-            <p>варианты type=forward, midfielder, defender, goalkeeper</p>
-            <p>для этого нужно добавить параметры запроса team= и type= через &</p>
-            <p>например ?type=forward&team=spartak получим нападающих игроков спартака.</p>
-            <p>регистр ввода не имеет значения.</p>
+            <p>варианты position=forward, midfielder, defender, goalkeeper</p>
+            <p>для этого нужно добавить параметры запроса team= и position= через &</p>
+            <p>например ?position=forward&team=spartak получим нападающих игроков спартака.</p>
+            <p>вводить название параметров маленькими буквами!</p>
             <p>для получения отдельной записи по номеру в базе данных, можно добавить номер через слеш</p>
-            <p>например players/4 вернет запись с ID=4</p>
+            <p>например http://localhost:8080/players/4 вернет игрока с ID=4</p>
 
             <a href="/teams">Получить все команды</a>
             <p>переход на страницу со списком всех команд,</p>
@@ -109,6 +109,14 @@
             <h2>РЕДАКТИРОВАНИЕ ИГРОКА</h2>
             <label>ID объекта:</label>
             <input type="text" name="playerId" value="">
+            <label>Фамилия :</label>
+            <input type="text" name="surname" value="">
+            <label>Имя :</label>
+            <input type="text" name="name" value="">
+            <label>Отчество :</label>
+            <input type="text" name="patronymic" value="">
+            <label>Дата рождения(гггг-мм-дд):</label>
+            <input type="text" name="bthdate" value="">
             <label>Роль(позиция):</label>
             <input type="text" name="position" value="">
             <label>Команда:</label>
