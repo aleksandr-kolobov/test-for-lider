@@ -19,6 +19,16 @@ databaseChangeLog:
                 constraints:
                   unique: true
                   nullable: false
+            - column:
+                name: sport
+                type: varchar(50)
+                constraints:
+                  nullable: false
+            - column:
+                name: bthdate
+                type: date
+                constraints:
+                  nullable: false
 - changeSet:
     id: 2
     author: postgres
@@ -39,17 +49,3 @@ databaseChangeLog:
                 constraints:
                   unique: true
                   nullable: false
-- changeSet:
-    id: 3
-    author: postgres
-    comment: "Create Noname Team"
-    changes:
-      - insert:
-          tableName: teams
-          columns:
-            - column:
-                name: id
-                value: 0
-            - column:
-                name: name
-                value: "Nonameteam"

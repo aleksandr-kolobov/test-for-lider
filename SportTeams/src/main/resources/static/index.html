@@ -24,10 +24,14 @@
 
             <a href="/teams">Получить все команды</a>
             <p>переход на страницу со списком всех команд,</p>
-            <p>также можно добавить свойство sport=football, basketball, volleyball, hockey, baseball</p>
-            <p>для получения записей команд из базы данных по виду спорта, можно добавить имя или номер через слеш</p>
-            <p>например teams/3 вернет команду с ID=3, или teams/csk вернет запись команды ЦСК в формате JSON</p>
+            <p>для получения записей команд из базы данных по виду спорта
+            <p>нужно добавить свойство sport=football, basketball, volleyball, hockey, baseball</p>
+            <p>для получения отдельной, можно добавить имя или номер через слеш</p>
+            <p>например http://localhost:8080/teams/3 вернет команду с ID=3,</p>
+            <p>или http://localhost:8080/teams/csk вернет запись команды ЦСК</p>
             <p>есть возможность получить команды за период по дате основания</p>
+            <p>например http://localhost:8080/teams?fromdate=1900-01-01&tilldate=1999-12-31</p>
+            <p>выдаст всех за прошлый век. формат даты ГГГГ-ММ-ДД</p>
         </div>
         <div class="middle">
             <h2>КОМАНДЫ</h2>
@@ -65,6 +69,8 @@
             <input type="text" name="name" value="">
             <label>Вид спорта:</label>
             <input type="text" name="sport" value="">
+            <label>Дата основания(гггг-мм-дд):</label>
+            <input type="text" name="bthdate" value="">
             <hr>
             <button class="save-correct-team-button">Сохранить</button>
         </form>
@@ -75,7 +81,7 @@
             <label>ID команды:</label>
             <input type="text" name="teamId" value="">
             <hr>
-            <button class="save-delete-team-button">Сохранить</button>
+            <button class="save-delete-team-button">Удалить</button>
         </form>
     </div>
 
