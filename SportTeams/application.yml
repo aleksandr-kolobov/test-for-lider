@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sportteams
+    username: postgres
+    password: testtest
+  jpa:
+    hibernate:
+      ddl-auto: validate
