@@ -1,6 +1,8 @@
 package main.controller;
 
 import main.model.*;
+import main.service.NameMapper;
+import main.service.PlayerMapper;
 import main.repository.PlayerRepository;
 import main.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,13 @@ public class PlayerController {
     @Autowired
     private TeamRepository teamRepository;
 
+    @Autowired
+    PlayerMapper playerMapper;
+
+    @Autowired
+    NameMapper nameMapper;
+
+
     @GetMapping("/players")
     public ResponseEntity<List<Player>> getPlayersList(
                        @RequestParam(defaultValue = "") String position
@@ -40,8 +49,7 @@ public class PlayerController {
             list = stream.collect(Collectors.toList());
         }
         if (!team.isEmpty()) {
-            team = team.substring(0, 1).toUpperCase() + team.substring(1).toLowerCase();
-            Optional<Team> optionalTeam = teamRepository.findByName(team);
+            Optional<Team> optionalTeam = teamRepository.findByName(nameMapper.normalName(team));
             if (!optionalTeam.isPresent()) {
                 return ResponseEntity.badRequest().build();
             }
@@ -61,24 +69,8 @@ public class PlayerController {
     }
 
     @PostMapping("/players")
-    public ResponseEntity<Player> addPlayer(DtoPlayer dtoPlayer) {
-        Player player = new Player();
-        String str = dtoPlayer.getSurname();
-        str = str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
-        player.setSurname(str);
-        str = dtoPlayer.getName();
-        str = str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
-        player.setName(str);
-        str = dtoPlayer.getPatronymic().isEmpty() ? "-" : dtoPlayer.getPatronymic();
-        str = str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
-        player.setPatronymic(str);
-        player.setBthdate(LocalDate.parse(dtoPlayer.getBthdate()));
-        player.setPosition(Position.valueOf(dtoPlayer.getPosition().toUpperCase()));
-        str = dtoPlayer.getTeam().isEmpty() ? "-" : dtoPlayer.getTeam();
-        str = str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
-        Optional<Team> optional = teamRepository.findByName(str);
-        player.setTeamId(optional.isPresent() ? optional.get().getId() : 0);
-        return new ResponseEntity(playerRepository.save(player), HttpStatus.OK);
+    public Player addPlayer(DtoPlayer dtoPlayer) {
+        return playerRepository.save(playerMapper.dtoToPlayer(dtoPlayer));
     }
 
     @PatchMapping("/players/{id}")
@@ -91,18 +83,13 @@ public class PlayerController {
 
         Player player = optionalPlayer.get();
         if (!surname.isEmpty()) {
-            surname = surname.substring(0, 1).toUpperCase()
-                    + surname.substring(1).toLowerCase();
-            player.setSurname(surname);
+            player.setSurname(nameMapper.normalName(surname));
         }
         if (!name.isEmpty()) {
-            name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
-            player.setName(name);
+            player.setName(nameMapper.normalName(name));
         }
         if (!patronymic.isEmpty()) {
-            patronymic = patronymic.substring(0, 1).toUpperCase()
-                    + patronymic.substring(1).toLowerCase();
-            player.setPatronymic(patronymic);
+            player.setPatronymic(nameMapper.normalName(patronymic));
         }
         if (!bthdate.isEmpty()) {
             player.setBthdate(LocalDate.parse(bthdate));
@@ -111,8 +98,7 @@ public class PlayerController {
             player.setPosition(Position.valueOf(position.toUpperCase()));
         }
         if (!team.isEmpty()) {
-            team = team.substring(0, 1).toUpperCase() + team.substring(1).toLowerCase();
-            Optional<Team> optionalTeam = teamRepository.findByName(team);
+            Optional<Team> optionalTeam = teamRepository.findByName(nameMapper.normalName(team));
             player.setTeamId(optionalTeam.isPresent() ? optionalTeam.get().getId() : 0);
         }
         return new ResponseEntity(playerRepository.save(player), HttpStatus.OK);

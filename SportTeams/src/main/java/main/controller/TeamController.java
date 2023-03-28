@@ -1,6 +1,8 @@
 package main.controller;
 
 import main.model.*;
+import main.service.NameMapper;
+import main.service.TeamMapper;
 import main.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,12 @@ public class TeamController {
     @Autowired
     private TeamRepository teamRepository;
 
+    @Autowired
+    TeamMapper teamMapper;
+
+    @Autowired
+    NameMapper nameMapper;
+
     @GetMapping("/teams")
     public ResponseEntity<List<Team>> getTeamsList(@RequestParam(defaultValue = "") String sport
                          , @RequestParam(defaultValue = "") String fromdate
@@ -36,7 +44,6 @@ public class TeamController {
             list = stream.collect(Collectors.toList());
         }
         if (!fromdate.isEmpty()) {
-            System.out.println(fromdate);
             LocalDate localDate;
             try {
                 localDate = LocalDate.parse(fromdate);
@@ -47,7 +54,6 @@ public class TeamController {
             list = stream.collect(Collectors.toList());
         }
         if (!tilldate.isEmpty()) {
-            System.out.println(tilldate);
             LocalDate localDate;
             try {
                 localDate = LocalDate.parse(tilldate);
@@ -63,7 +69,7 @@ public class TeamController {
 
     @GetMapping("/teams/{nameOrId}")
     public ResponseEntity<Team> getTeam(@PathVariable String nameOrId) {
-        nameOrId = nameOrId.substring(0, 1).toUpperCase() + nameOrId.substring(1).toLowerCase();
+        nameOrId = nameMapper.normalName(nameOrId);
         Optional<Team> optional = teamRepository.findByName(nameOrId);
         if (optional.isPresent()) {
             return new ResponseEntity(optional.get(), HttpStatus.OK);
@@ -74,20 +80,13 @@ public class TeamController {
     }
 
     @PostMapping("/teams")
-    public ResponseEntity<Team> addTeam(DtoTeam dtoTeam) {
-        Team team = new Team();
-        String name = dtoTeam.getName();
-        name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
-        team.setName(name);
-        team.setSport(Sport.valueOf(dtoTeam.getSport().toUpperCase()));
-        team.setBthdate(LocalDate.parse(dtoTeam.getBthdate()));
-        return new ResponseEntity(teamRepository.save(team), HttpStatus.OK);
+    public Team addTeam(DtoTeam dtoTeam) {
+        return teamRepository.save(teamMapper.dtoToTeam(dtoTeam));
     }
 
     @PatchMapping("/teams")
     public ResponseEntity<Team> correctTeamByName(String name, String sport, String bthdate) {
-        name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
-        Optional<Team> optional = teamRepository.findByName(name);
+        Optional<Team> optional = teamRepository.findByName(nameMapper.normalName(name));
         if(!optional.isPresent()) {
             return ResponseEntity.notFound().build();
         }
@@ -112,8 +111,7 @@ public class TeamController {
 
         Team team = optional.get();
         if (!name.isEmpty()) {
-            name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
-            team.setName(name);
+            team.setName(nameMapper.normalName(name));
         }
         if (!sport.isEmpty()) {
             team.setSport(Sport.valueOf(sport.toUpperCase()));
