@@ -1,8 +1,8 @@
-package main.service;
+package main.model.mapper;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class NameMapper {
     public String normalName(String name) {
         if (name.isEmpty()) {

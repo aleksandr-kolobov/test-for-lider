@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String name;
     @Enumerated(EnumType.STRING)
     private Sport sport;

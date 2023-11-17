@@ -1,9 +1,10 @@
 package main.controller;
 
 import main.model.*;
-import main.service.NameMapper;
-import main.service.TeamMapper;
-import main.repository.TeamRepository;
+import main.model.dto.DtoTeam;
+import main.model.mapper.NameMapper;
+import main.model.mapper.TeamMapper;
+import main.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public class TeamController {
 
     @Autowired
-    private TeamRepository teamRepository;
+    private TeamService teamService;
 
     @Autowired
     TeamMapper teamMapper;
@@ -32,7 +32,7 @@ public class TeamController {
     public ResponseEntity<List<Team>> getTeamsList(@RequestParam(defaultValue = "") String sport
                          , @RequestParam(defaultValue = "") String fromdate
                    , @RequestParam(defaultValue = "") String tilldate){
-        List<Team> list = new ArrayList<>(teamRepository.findAll());
+        List<Team> list = new ArrayList<>(teamService.findAll());
         if (!sport.isEmpty()) {
             Sport sportF;
             try {
@@ -70,46 +70,43 @@ public class TeamController {
     @GetMapping("/teams/{nameOrId}")
     public ResponseEntity<Team> getTeam(@PathVariable String nameOrId) {
         nameOrId = nameMapper.normalName(nameOrId);
-        Optional<Team> optional = teamRepository.findByName(nameOrId);
-        if (optional.isPresent()) {
-            return new ResponseEntity(optional.get(), HttpStatus.OK);
+        Team team = teamService.findByName(nameOrId);
+        if (team != null) {
+            return new ResponseEntity(team, HttpStatus.OK);
         }
-        optional = teamRepository.findById(Integer.parseInt(nameOrId));
-        return !optional.isPresent() ? ResponseEntity.notFound().build() :
-                new ResponseEntity(optional.get(), HttpStatus.OK);
+        team = teamService.findById(Integer.parseInt(nameOrId));
+        return (team == null) ? ResponseEntity.notFound().build() :
+                new ResponseEntity(team, HttpStatus.OK);
     }
 
     @PostMapping("/teams")
-    public Team addTeam(DtoTeam dtoTeam) {
-        return teamRepository.save(teamMapper.dtoToTeam(dtoTeam));
+    public ResponseEntity<Team> addTeam(DtoTeam dtoTeam) {
+        Team team = teamMapper.dtoToTeam(dtoTeam);
+        return new ResponseEntity(teamService.save(team), HttpStatus.OK);
     }
 
     @PatchMapping("/teams")
     public ResponseEntity<Team> correctTeamByName(String name, String sport, String bthdate) {
-        Optional<Team> optional = teamRepository.findByName(nameMapper.normalName(name));
-        if(!optional.isPresent()) {
+        Team team = teamService.findByName(nameMapper.normalName(name));
+        if(team == null) {
             return ResponseEntity.notFound().build();
         }
-
-        Team team = optional.get();
         if (!sport.isEmpty()) {
             team.setSport(Sport.valueOf(sport.toUpperCase()));
         }
         if (!bthdate.isEmpty()) {
             team.setBthdate(LocalDate.parse(bthdate));
         }
-        return new ResponseEntity(teamRepository.save(team), HttpStatus.OK);
+        return new ResponseEntity(teamService.save(team), HttpStatus.OK);
     }
 
     @PatchMapping("/teams/{id}")
     public ResponseEntity<Team> correctTeamById(@PathVariable int id,
                              String name, String sport, String bthdate) {
-        Optional<Team> optional = teamRepository.findById(id);
-        if(!optional.isPresent()) {
+        Team team = teamService.findById(id);
+        if(team == null) {
             return ResponseEntity.notFound().build();
         }
-
-        Team team = optional.get();
         if (!name.isEmpty()) {
             team.setName(nameMapper.normalName(name));
         }
@@ -119,15 +116,15 @@ public class TeamController {
         if (!bthdate.isEmpty()) {
             team.setBthdate(LocalDate.parse(bthdate));
         }
-        return new ResponseEntity(teamRepository.save(team), HttpStatus.OK);
+        return new ResponseEntity(teamService.save(team), HttpStatus.OK);
     }
 
     @DeleteMapping("/teams/{id}")
-    public ResponseEntity deleteTeam(@PathVariable int id) {
-        if (teamRepository.existsById(id)) {
-            teamRepository.deleteById(id);
-            return ResponseEntity.ok().build();
+    public HttpStatus deleteTeam(@PathVariable int id) {
+        if (teamService.existsById(id)) {
+            teamService.deleteById(id);
+            return HttpStatus.OK;
         }
-        return ResponseEntity.notFound().build();
+        return HttpStatus.NO_CONTENT;
     }
 }

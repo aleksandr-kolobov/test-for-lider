@@ -12,12 +12,12 @@ import java.time.LocalDate;
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String surname;
     private String name;
     private String patronymic;
     private LocalDate bthdate;
     @Enumerated(EnumType.STRING)
     private Position position;
-    private int teamId;
+    private Integer teamId;
 }

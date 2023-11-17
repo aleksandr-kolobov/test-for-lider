@@ -1,13 +1,13 @@
-package main.service;
+package main.model.mapper;
 
-import main.model.DtoTeam;
+import main.model.dto.DtoTeam;
 import main.model.Sport;
 import main.model.Team;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 
-@Service
+@Component
 public class TeamMapper {
     @Autowired
     NameMapper nameMapper;

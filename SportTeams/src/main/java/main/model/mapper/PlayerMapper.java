@@ -1,13 +1,14 @@
-package main.service;
+package main.model.mapper;
 
 import main.model.*;
+import main.model.dto.DtoPlayer;
 import main.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.Optional;
 
-@Service
+@Component
 public class PlayerMapper {
     @Autowired
     private TeamRepository teamRepository;
