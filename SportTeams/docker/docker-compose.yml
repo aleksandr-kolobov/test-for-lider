@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:15.2
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=testtest
+      - POSTGRES_DB=sportteams
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
